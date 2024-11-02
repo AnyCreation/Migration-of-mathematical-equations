@@ -11,9 +11,8 @@ class Solution:
         }
 
     def SpaceDelete(self):
-        for Delete in range(len(self.equation)):
-            if self.equation[-1] == 'SPACE':
-                self.equation.pop()
+        while self.equation and self.equation[-1] == "SPACE": # while проверяет если список не пустой and проверяет если последний элемент равен "SPACE"
+            self.equation.pop()
 
 
     def Act(self):
