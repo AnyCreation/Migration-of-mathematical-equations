@@ -15,66 +15,69 @@ class Solution:
             "^": lambda a, b: a ** b,
         }
 
-    def SpaceCreate(self, Index):
-        self.__equation.pop(Index + 1) # удаляет число после МС
-        self.__equation.append("SPACE") # кастил для избавления от "IndexError: list index out of range"
 
-        self.__equation.pop(Index - 1) # удаляет число перед МС
-        self.__equation.append("SPACE") # кастил для избавления от "IndexError: list index out of range"
+    def SpaceCreate(self, Index, HERE: list[str]):
+        HERE.pop(Index + 1) # удаляет число после МС
+        HERE.append("SPACE") # кастил для избавления от "IndexError: list index out of range"
+
+        HERE.pop(Index - 1) # удаляет число перед МС
+        HERE.append("SPACE") # кастил для избавления от "IndexError: list index out of range"
         
-    def SpaceDelete(self): # удаляет костыли
-        while self.__equation and self.__equation[-1] == "SPACE": # while проверяет если список не пустой and проверяет если последний элемент равен "SPACE"
-            self.__equation.pop()
+    def SpaceDelete(self, HERE: list[str]): # удаляет костыли
+        while HERE and HERE[-1] == "SPACE": # while проверяет если список не пустой and проверяет если последний элемент равен "SPACE"
+            HERE.pop()
 
 
-    def Act(self):
+    def Act(self, EQUA: list[str]):
         Repeat = 0
-        for FoundActs in self.__equation:
+        for FoundActs in EQUA:
             if FoundActs in self.__mathSymbols:
                 Repeat += 1
 
-        lenEquation = range(len(self.__equation))
+        lenEquation = range(len(EQUA))
+
         # сперва решаеть степень
         for _ in range(Repeat): # Повторения равно количество математических символов
             for ActIndex in lenEquation:
                 # ^
-                if self.__equation[ActIndex] in self.__MAXacts.keys():
+                if EQUA[ActIndex] in self.__MAXacts.keys():
                     # решение и вставление
-                    res = self.__MAXacts[self.__equation[ActIndex]](float(self.__equation[ActIndex - 1]), float(self.__equation[ActIndex + 1]))
-                    self.__equation[ActIndex] = res # заменять математический символ на ответ уравнений
+                    res = self.__MAXacts[EQUA[ActIndex]](float(EQUA[ActIndex - 1]), float(EQUA[ActIndex + 1]))
+                    EQUA[ActIndex] = res # заменять математический символ на ответ уравнений
 
-                    self.SpaceCreate(ActIndex)
+                    self.SpaceCreate(ActIndex, EQUA)
 
         # потом решаеть умножения и деления
         for _ in range(Repeat): # Повторения равно количество математических символов
             for ActIndex in lenEquation:
                 # *; /
-                if self.__equation[ActIndex] in self.__MIDacts.keys():
+                if EQUA[ActIndex] in self.__MIDacts.keys():
                     # решение и вставление
-                    res = self.__MIDacts[self.__equation[ActIndex]](float(self.__equation[ActIndex - 1]), float(self.__equation[ActIndex + 1]))
-                    self.__equation[ActIndex] = res # заменять математический символ на ответ уравнений
+                    res = self.__MIDacts[EQUA[ActIndex]](float(EQUA[ActIndex - 1]), float(EQUA[ActIndex + 1]))
+                    EQUA[ActIndex] = res # заменять математический символ на ответ уравнений
 
-                    self.SpaceCreate(ActIndex)
+                    self.SpaceCreate(ActIndex, EQUA)
 
         # напоследок решает плюс и минус
         for _ in range(Repeat): # Повторения равно количество математических символов
             for ActIndex in lenEquation:
                 # +; -
-                if self.__equation[ActIndex] in self.__MINacts.keys():
+                if EQUA[ActIndex] in self.__MINacts.keys():
 
                     # решение и вставление
-                    res = self.__MINacts[self.__equation[ActIndex]](float(self.__equation[ActIndex - 1]), float(self.__equation[ActIndex + 1]))
-                    self.__equation[ActIndex] = res # заменять математический символ на ответ уравнений
+                    res = self.__MINacts[EQUA[ActIndex]](float(EQUA[ActIndex - 1]), float(EQUA[ActIndex + 1]))
+                    EQUA[ActIndex] = res # заменять математический символ на ответ уравнений
 
-                    self.SpaceCreate(ActIndex)
+                    self.SpaceCreate(ActIndex, EQUA)
+        self.SpaceDelete(EQUA)
 
-        self.SpaceDelete()
+        return EQUA
 
 
     # возвращает результат подсчёта
     def solution(self):
-        self.Act() 
-        return self.__equation
+        result = self.Act(self.__equation) 
+        return result
 
         
 
