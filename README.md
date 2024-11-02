@@ -3,7 +3,7 @@ I think everything is clear from the title
 ----
 to-do list:
 * solved simple mathematical equations - V
-* understood the procedure - 
+* understood the procedure - V
 * worked with brackets - 
 * 
 
