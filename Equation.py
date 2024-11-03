@@ -15,6 +15,11 @@ class Solution:
             "^": lambda a, b: a ** b,
         }
 
+    def AreaDeletion(self, OE: dict, Inse: list, HERE: list[str]):
+        for Che in OE.values():
+            HERE[Che[0]] ==  2
+            print(Che[0])
+        print(HERE)
 
     def SpaceCreate(self, Index, HERE: list[str]):
         HERE.pop(Index + 1) # удаляет число после МС
@@ -27,6 +32,42 @@ class Solution:
         while HERE and HERE[-1] == "SPACE": # while проверяет если список не пустой and проверяет если последний элемент равен "SPACE"
             HERE.pop()
 
+    
+    def brackets(self, HERE: list[str]) -> dict: # находит позиция скобок
+        OE = []
+        value = {} # сохранение позиции скобак
+        for Zone in range(len(HERE)):
+            if HERE[Zone] == "(": # позиция открытой скобки
+                OE.append(Zone)
+            elif HERE[Zone] == ")": # позиция закрытой скобки
+                OE.append(Zone)
+        
+        for V in range(0, len(OE), 2):
+            value[f"O{OE[V]}E{OE[V] + 1}"]  = (OE[V], OE[V + 1])
+
+        return value
+    
+    def SolutionBrackets(self, HERE: list[str]):
+        Position = self.brackets(HERE)
+        Equations = {}
+
+        values = Position.values()
+        for Found in range( len( Position.values() )):
+            Eq = HERE[list(values)[Found][0] + 1:list(values)[Found][1]]
+            Equations[f"ZONE{Found}"] = self.Act(Eq)
+        print(HERE)
+
+        return Equations
+    
+    def InsertionInBrackets(self, HERE: list[str]):
+        Position = self.brackets(HERE)
+        Insertion = self.SolutionBrackets(HERE)
+
+        HERE = self.AreaDeletion(Position, Insertion, HERE)
+
+        return HERE
+        
+        
 
     def Act(self, EQUA: list[str]):
         Repeat = 0
@@ -82,5 +123,8 @@ class Solution:
         
 
 if __name__ == "__main__":
-    S = Solution(["3", "^", "4", "*", "3"])
+    S = Solution(["58"])
+    print(S.brackets(["(", "3", "^", "4", ")", "*", "(", "3", "-", "1", ")"]))
+    print(S.SolutionBrackets(["(", "3", "^", "4", ")", "*", "(", "3", "-", "1", ")"]))
+    print(S.InsertionInBrackets(["(", "3", "^", "4", ")", "*", "(", "3", "-", "1", ")"]))
     print(S.solution())
