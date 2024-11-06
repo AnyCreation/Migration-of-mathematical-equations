@@ -158,7 +158,7 @@ class Solution:
     # возвращает результат подсчёта
     def solution(self):
         result = self.Act(self.__equation, True) 
-        return result
+        return result[0]
 
         
 
