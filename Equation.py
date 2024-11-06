@@ -1,6 +1,9 @@
 class Solution:
-    def __init__(self, equation: list[str]):
-        self.__equation = equation
+    def __init__(self, equation: list[str] | str):
+        if isinstance(equation, str):
+            self.__equation = equation.split(" ")
+        else:
+            self.__equation = equation
 
         self.__mathSymbols = ("+", "-", "*", "/", "^")
         self.__MINacts = {
@@ -15,13 +18,19 @@ class Solution:
             "^": lambda a, b: a ** b,
         }
 
-    def AreaDeletion(self, OE: dict, Inse: list, HERE: list[str]):
-        for Che in OE.values():
-            HERE[Che[0]] ==  2
-            print(Che[0])
-        print(HERE)
 
+
+    # (!--костил--!)
     def SpaceCreate(self, Index, HERE: list[str]):
+
+        """
+        - присоединение двух чисел происходит изменение количества элементов что иногда приводит к IndexError
+
+        ↓
+
+        - добавляя "запасной" элемент в конец списка ошибка избегается
+        """
+
         HERE.pop(Index + 1) # удаляет число после МС
         HERE.append("SPACE") # кастил для избавления от "IndexError: list index out of range"
 
@@ -29,47 +38,78 @@ class Solution:
         HERE.append("SPACE") # кастил для избавления от "IndexError: list index out of range"
         
     def SpaceDelete(self, HERE: list[str]): # удаляет костыли
+        """
+        - зная точно что запасной элемент будет в конце списка 
+        - я могу его удалить без боязни что удалиться какой-то важный элемент
+        """
+
         while HERE and HERE[-1] == "SPACE": # while проверяет если список не пустой and проверяет если последний элемент равен "SPACE"
             HERE.pop()
+    # (!--костил--!)
 
-    
+
+    # (!--скобки--!)
+    def AreaDeletion(self, Pos: list, Inse: list, HERE: list[str]):
+        """
+        ***AreaDeletion***
+        - Pos - позиция открытой и закрытой скобки
+        - Inse - значение согласно уравнению внутри скобок
+        - HERE - общее уравнение
+
+        вставляет ответ скобок и удаляет скобки и всё что внутри них
+        """
+
+        Deletes = []
+
+        for Area in Pos:
+            HERE[Area[ 0]] = Inse[Pos.index(Area)][-1] # ставить решения скобок вместо первой скобки
+
+            for delete in range(Area[0] + 1, Area[1] + 1): # начинает от первого элемента после открытой скобки и заканчивает на закрытую скобку
+                Deletes.append(delete) # сохранять места которые должны быть удалены
+
+        for D in Deletes[::-1]: # проходеть по местом удаления от конца до начало, для избегание IndexError: pop index out of range
+            HERE.pop(D) # удаляет элемент по индексу
+
+        return HERE
+
     def brackets(self, HERE: list[str]) -> dict: # находит позиция скобок
-        OE = []
-        value = {} # сохранение позиции скобак
+        OE = [] # сохранение индекса скобок
+        value = [] # сохранение позиции скобак
         for Zone in range(len(HERE)):
             if HERE[Zone] == "(": # позиция открытой скобки
                 OE.append(Zone)
             elif HERE[Zone] == ")": # позиция закрытой скобки
                 OE.append(Zone)
         
-        for V in range(0, len(OE), 2):
-            value[f"O{OE[V]}E{OE[V] + 1}"]  = (OE[V], OE[V + 1])
+        for Convert in range(0, len(OE), 2):
+            # сохраняет в одном кортеже индекс открытой и индекс закрытой скобки
+            value.append((OE[Convert], OE[Convert + 1])) 
 
         return value
     
+    
     def SolutionBrackets(self, HERE: list[str]):
-        Position = self.brackets(HERE)
-        Equations = {}
+        Position = self.brackets(HERE) # получает индекс скобок
+        Equations = [] # список для сохранения решений
 
-        values = Position.values()
-        for Found in range( len( Position.values() )):
-            Eq = HERE[list(values)[Found][0] + 1:list(values)[Found][1]]
-            Equations[f"ZONE{Found}"] = self.Act(Eq)
-        print(HERE)
-
-        return Equations
+        for Found in range( len( Position )):
+            Eq = HERE[Position[Found][0] + 1:Position[Found][1]] # решает уравнение внутри скобок
+            Equations.append(self.Act(Eq, False)) # сохраняет решение уравнения | проверка что подсчёт вне скобок (почёт в скобках Так что False)
+            
+        return Equations, Position
     
     def InsertionInBrackets(self, HERE: list[str]):
-        Position = self.brackets(HERE)
-        Insertion = self.SolutionBrackets(HERE)
-
-        HERE = self.AreaDeletion(Position, Insertion, HERE)
+        Insertion, Position = self.SolutionBrackets(HERE)
+        HERE = self.AreaDeletion(Position, Insertion, HERE) # вставляет ответ в общее уравнение
 
         return HERE
-        
+    # (!--скобки--!)
         
 
-    def Act(self, EQUA: list[str]):
+    def Act(self, EQUA: list[str], Out: bool):
+        if Out: # проверяйте если уравнение для подсчёта вне скобок
+            EQUA = self.InsertionInBrackets(EQUA)
+        
         Repeat = 0
         for FoundActs in EQUA:
             if FoundActs in self.__mathSymbols:
@@ -78,7 +118,7 @@ class Solution:
         lenEquation = range(len(EQUA))
 
         # сперва решаеть степень
-        for _ in range(Repeat): # Повторения равно количество математических символов
+        for _ in range(Repeat): # Повторения равно количество математических символов в уравнении
             for ActIndex in lenEquation:
                 # ^
                 if EQUA[ActIndex] in self.__MAXacts.keys():
@@ -117,14 +157,11 @@ class Solution:
 
     # возвращает результат подсчёта
     def solution(self):
-        result = self.Act(self.__equation) 
+        result = self.Act(self.__equation, True) 
         return result
 
         
 
 if __name__ == "__main__":
-    S = Solution(["58"])
-    print(S.brackets(["(", "3", "^", "4", ")", "*", "(", "3", "-", "1", ")"]))
-    print(S.SolutionBrackets(["(", "3", "^", "4", ")", "*", "(", "3", "-", "1", ")"]))
-    print(S.InsertionInBrackets(["(", "3", "^", "4", ")", "*", "(", "3", "-", "1", ")"]))
+    S = Solution(["58", "*", "(", "1", "-", "1", ")", "+", "10"])
     print(S.solution())
