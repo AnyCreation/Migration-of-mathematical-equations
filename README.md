@@ -10,3 +10,4 @@ to-do list:
 Maybe: 
 * understood fractions
 * worked with variables
+* GUI
