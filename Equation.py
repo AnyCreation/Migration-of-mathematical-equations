@@ -1,9 +1,11 @@
 class Solution:
     def __init__(self, equation: list[str] | str):
-        if isinstance(equation, str):
-            self.__equation = equation.split(" ")
-        else:
-            self.__equation = equation
+        self.__equation = []
+        for Checking in range(len(equation)):
+            if equation[Checking] == " ":
+                continue
+            else:
+                self.__equation.append(equation[Checking])
 
         self.__mathSymbols = ("+", "-", "*", "/", "^")
         self.__MINacts = {
@@ -107,8 +109,9 @@ class Solution:
         
 
     def Act(self, EQUA: list[str], Out: bool):
-        if Out: # проверяйте если уравнение для подсчёта вне скобок
-            EQUA = self.InsertionInBrackets(EQUA)
+        if "(" in EQUA: # провераеть если в уровнений есть скобки 
+            if Out: # проверяйте если уравнение для подсчёта вне скобок
+                EQUA = self.InsertionInBrackets(EQUA) # раздел СКОБКИ выполнаеть свою работу
         
         Repeat = 0
         for FoundActs in EQUA:
